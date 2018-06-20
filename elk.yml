@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elk
+spec:
+  selector:
+    matchLabels:
+      app: elk
+  template:
+    metadata:
+      labels:
+        app: elk
+    spec:
+      containers:
+      - name: elk
+        image: sebp/elk
+        ports:
+        - containerPort: 5601
+          name:  kibana-web
+        - containerPort: 5044
+          name: elastic-web
+        - containerPort: 9200
+          name: elastic-json
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elk
+spec:
+  selector:
+    app: lek
+  ports:
+  - port: 5601
+    targetPort: 5601
+    name:  kibana-web
+  - port: 5044
+    targetPort: 5044
+    name: elastic-web
+  - port: 9200
+    targetPort: 9200
+    name: elastic-json

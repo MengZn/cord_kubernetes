@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xos-ws
+spec:
+  selector:
+    matchLabels:
+      app: xos-ws
+  template:
+    metadata:
+      labels:
+        app: xos-ws
+    spec:
+      containers:
+      - name: xos-ws
+        image: xosproject/xos-ws:master
+        command: 
+        - "npm"
+        args: 
+        - "start"
+        - "--"
+        - "--config"
+        - "gateway-config.yml"
+        volumeMounts:
+        - mountPath: /var/www/src/config/gateway-config.yml
+          name: config
+        env:
+        - name: SERVICE_3000_NAME
+          value: xos-ws
+        ports:
+          - containerPort: 3000
+      volumes:
+        - name: config
+          hostPath:
+            path: /opt/cord_profile/gateway-config.yml
+

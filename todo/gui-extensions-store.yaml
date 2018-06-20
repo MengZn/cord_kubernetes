@@ -1,0 +1,60 @@
+---
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name:  xos-gui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name:  xos-gui
+    spec:
+      containers:
+      - name: xos-gui
+        image: xosproject/xos-gui:master
+        ports:
+        - containerPort: 4000
+      initContainers:
+      - name: gui-extensions-store
+        image: jason0330/node
+        command: 
+        - "/bin/true"
+        volumeMounts:
+        - mountPath: /var/www/dist/extensions
+          name: extensions
+      - name: gui-extension-vtr
+        image: xosproject/gui-extension-vtr:master
+        command: 
+        - "/bin/sh"
+        args: 
+        - "-c"
+        - "mkdir"
+        - "-p"
+        - "/var/www/dist/extensions/vtr/"
+        - "&&"
+        - "cp"
+        - "-R"
+        - "/tmp/* /var/www/dist/extensions/vtr/"
+        volumeMounts:
+        - mountPath: /var/www/dist/extensions
+          name: extensions
+      - name: gui-extension-rcord
+        image: xosproject/gui-extension-rcord:master
+        command: 
+        - "/bin/sh"
+        args: 
+        - "-c"
+        - "mkdir"
+        - "-p"
+        - "/var/www/dist/extensions/rcord/"
+        - "&&"
+        - "cp"
+        - "-R"
+        - "/tmp/* /var/www/dist/extensions/rcord/"
+        volumeMounts:
+        - mountPath: /var/www/dist/extensions
+          name: extensions
+      restartPolicy: Never
+      volumes:
+      - name: extensions
+        emptyDir: {}

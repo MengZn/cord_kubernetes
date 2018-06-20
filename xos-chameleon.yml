@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xos-chameleon
+spec:
+  selector:
+    matchLabels:
+      app: xos-chameleon
+  template:
+    metadata:
+      labels:
+        app: xos-chameleon
+    spec:
+      containers:
+      - name: xos-chameleon
+        image: xosproject/chameleon:master
+        command: 
+        - "python"
+        args: 
+        - "chameleon/chameleon/main.py"
+        - "-R"
+        - "9101"
+        - "-G"
+        - "xos-core:50055"
+        - "--swagger-url"
+        - "/apidocs"
+        env:
+        - name: SERVICE_9101_NAME
+          value: xos-rest
+        ports:
+        - containerPort: 9101
+

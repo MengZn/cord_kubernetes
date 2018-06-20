@@ -1,0 +1,37 @@
+---
+app: apps/v1
+kind: Deployment
+metadata:
+  name: xos-gui
+  labels:
+    app: xos-gui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xos-gui
+  template:
+    metadata:
+      labels:
+        app: xos-gui
+    spec:
+      containers:
+      - name: xos-gui
+        image: xosproject/xos-gui
+        ports:
+        - containerPort: 4000
+        env:
+        - name: SERVICE_4000_NAME
+          value: "xos-gui"
+        - name: SERVICE_80_IGNORE
+          value: "yes"
+        volumeMounts:
+        - name: vol
+          mountPath: /scrub
+  volumes:
+  - name: style
+    hostPath:
+      path: /opt/cord_profile/style.config.js
+  - name: app
+    hostPath:
+      path: /opt/cord_profile/app.config.js

@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xos-redis
+  labels:
+    app: xos-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xos-redis
+  template:
+    metadata:
+      labels:
+        app: xos-redis
+    spec:
+      containers:
+      - name: xos-redis
+        image: redis:3.2
+        ports:
+        - containerPort: 5432
+        env:
+        - name: SERVICE_NAME
+          value: "redis"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  xos-redis
+spec:
+  selector:
+    app:  xos-redis
+  type:  ClusterIP
+  ports:
+  - name:  xos-redis
+    port:  6379
+    targetPort:  6379

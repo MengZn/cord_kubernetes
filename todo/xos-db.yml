@@ -1,0 +1,38 @@
+---
+app: apps/v1
+kind: Deployment
+metadata:
+  name: xos-postgres
+  labels:
+    app: xos-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xos-postgres
+  template:
+    metadata:
+      labels:
+        app: xos-postgres
+    spec:
+      containers:
+      - name: xos-postgres
+        image: xosproject/xos-postgres
+        ports:
+        - containerPort: 5432
+        env:
+        - name: SERVICE_5432_NAME
+          value: "xos-db"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  xos-postgres
+spec:
+  selector:
+    app:  xos-postgres
+  type:   ClusterIP
+  ports:
+  - name:  xos-db
+    port:  5432
+    targetPort:  5432

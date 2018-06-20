@@ -1,0 +1,23 @@
+---
+app: apps/v1
+kind: Deployment
+metadata:
+  name: xos-redis
+  labels:
+    app: xos-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xos-redis
+  template:
+    metadata:
+      labels:
+        app: xos-redis
+    spec:
+      containers:
+      - name: xos-redis
+        image: docker-registry:5000/redis:candidate
+        env:
+        - name: SERVICE_NAME
+          value: "redis"

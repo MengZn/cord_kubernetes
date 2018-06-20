@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xos-ui
+spec:
+  selector:
+    matchLabels:
+      app: xos-ui
+  template:
+    metadata:
+      labels:
+        app: xos-ui
+    spec:
+      containers:
+      - name: xos-ui
+        image: jason0330/xos-ui
+        command: 
+        - "/bin/bash"
+        args: 
+        - "-c"
+        - "sed -i 's/elk/elk.default.svc.cluster.local/g' /etc/filebeat/filebeat.yml"
+        - "service filebeat start"
+        - "cd coreapi"
+        - "bash ./start_coreapi.sh"
+        env:
+          - name: SERVICE_50051_NAME
+            value: xos-grpc-secure
+          - name: SERVICE_50055_NAME
+            value: xos-grpc-insecure
+        securityContext:
+          privileged: true
+        ports:
+          - containerPort: 50051
+          - containerPort: 50055
+        volumeMounts:
+        - mountPath: /opt/xos/xos_config.yaml
+          name: config
+          readOnly: true         
+        - mountPath: /opt/cord_profile
+          name: profile
+          readOnly: true          
+        - mountPath: /usr/local/share/ca-certificates/local_certs.crt
+          name: chain-pem
+          readOnly: true          
+        - mountPath: /opt/xos/core/migrations/initial_data.yaml
+          name: initial-data
+          readOnly: true          
+        - mountPath: /var/run/docker.sock
+          name: docker-sock-volume        
+      volumes:
+        - name: config
+          hostPath:
+            path: /opt/cord_profile/xos_config.yaml
+        - name: profile
+          hostPath:
+            path: /opt/cord_profile  
+        - name: chain-pem
+          hostPath:
+            path: /opt/cord_profile/im_cert_chain.pem    
+        - name: initial-data
+          hostPath:
+            path: /opt/cord_profile/initial_data.yaml      
+        - name: docker-sock-volume
+          hostPath:
+            path: /var/run/docker.sock        
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: xos-ui
+spec:
+  selector:
+    app: xos-ui
+  ports:
+  - port: 50051
+    targetPort: 50051
+    name: xos-grpc-secure
+  - port: 50055
+    targetPort: 50055
+    name: xos-grpc-insecure

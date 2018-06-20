@@ -1,0 +1,57 @@
+---
+app: app/v1
+kind: Deployment
+metadata:
+  name:  xos-tosca
+  labels:
+    name:  xos-tosca
+spec:
+  # strategy:
+  #   rollingUpdate:
+  #     maxSurge: 1
+  #     maxUnavailable: 1
+  #   type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name:  xos-tosca
+    spec:
+      containers:
+      - image:  xosproject/xos-tosca
+        name:  xos-tosca
+        env:
+        - name:  SERVICE_9102_NAME
+          value:  xos-tosca       
+        ports:
+        - containerPort:  9102
+        volumeMounts:
+        - mountPath: /usr/local/share/ca-certificates/local_certs.crt
+          name: chain-pem
+          readOnly: true
+        - mountPath: /opt/xos-tosca/src/xos-tosca.config.yaml
+          name: tosca
+      volumes:
+        - name: tosca
+          hostPath:
+            path: /opt/cord_profile/xos-tosca.config.yaml
+        - name: chain-pem
+          hostPath:
+            path: /opt/cord_profile/im_cert_chain.pem
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: xos-tosca
+spec:
+  selector:
+    app: xos-tosca
+  ports:
+  - port: 5601
+    targetPort: 5601
+    name:  kibana-web
+  - port: 5044
+    targetPort: 5044
+    name: elastic-web
+  - port: 9200
+    targetPort: 9200
+    name: elastic-json
