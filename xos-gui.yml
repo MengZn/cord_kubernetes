@@ -1,19 +1,35 @@
 ---
-apiVersion: app/v1
+app: apps/v1
 kind: Deployment
 metadata:
-  name:  xos-gui
+  name: xos-gui
+  labels:
+    app: xos-gui
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: xos-gui
   template:
     metadata:
-      name:  xos-gui
+      labels:
+        app: xos-gui
     spec:
       containers:
       - name: xos-gui
         image: xosproject/xos-gui:master
         ports:
         - containerPort: 4000
+        env:
+        - name: SERVICE_4000_NAME
+          value: "xos-gui"
+        - name: SERVICE_80_IGNORE
+          value: "yes"
+        volumeMounts:
+        - name: style
+          mountPath: /var/www/dist/style.config.js
+        - name: app
+          mountPath: /var/www/dist/app.config.js
       initContainers:
       - name: gui-extensions-store
         image: jason0330/node
@@ -54,7 +70,12 @@ spec:
         volumeMounts:
         - mountPath: /var/www/dist/extensions
           name: extensions
-      restartPolicy: Never
-      volumes:
-      - name: extensions
-        emptyDir: {}
+  volumes:
+  - name: style
+    hostPath:
+      path: /opt/cord_profile/style.config.js
+  - name: app
+    hostPath:
+      path: /opt/cord_profile/app.config.js
+  - name: extensions
+    emptyDir: {}
