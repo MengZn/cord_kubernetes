@@ -10,11 +10,15 @@ $kubectl apply -f elk.yml
 ```
 
 ```bash
-$kubectl apply -f xos-ui.yml
+$kubectl apply -f xos-db.yml
 ```
 
 ```bash
 $kubectl apply -f xos-redis.yml
+```
+
+```bash
+$kubectl apply -f xos-ui.yml
 ```
 
 ```bash
