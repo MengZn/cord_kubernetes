@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: xos-postgres
-        image: xosproject/xos-postgres
+        image: xosproject/xos-postgres:master
         ports:
         - containerPort: 5432
         env:
