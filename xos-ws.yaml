@@ -34,4 +34,16 @@ spec:
         - name: config
           hostPath:
             path: /opt/cord_profile/gateway-config.yml
-
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  xos-ws
+spec:
+  selector:
+    app:  xos-ws
+  type:  ClusterIP
+  ports:
+  - name:  xos-ws
+    port:  3000
+    targetPort:  3000
