@@ -31,3 +31,16 @@ spec:
         ports:
         - containerPort: 9101
 
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  xos-chameleon
+spec:
+  selector:
+    app:  xos-chameleon
+  type:  ClusterIP
+  ports:
+  - name: xos-chameleon
+    port:  9101
+    targetPort:  9101
