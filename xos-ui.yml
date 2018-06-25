@@ -19,10 +19,7 @@ spec:
         - "/bin/bash"
         args: 
         - "-c"
-        - "sed -i 's/elk/elk.default.svc.cluster.local/g' /etc/filebeat/filebeat.yml"
-        - "service filebeat start"
-        - "cd coreapi"
-        - "bash ./start_coreapi.sh"
+        - "./run.sh"
         env:
           - name: SERVICE_50051_NAME
             value: xos-grpc-secure
