@@ -1,5 +1,5 @@
 ---
-app: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: xos-gui
@@ -17,7 +17,12 @@ spec:
     spec:
       containers:
       - name: xos-gui
-        image: xosproject/xos-gui:master
+        image: jason0330/xos-gui
+        command:
+          - /bin/bash
+        args:
+          - -c
+          - while true; do echo hello; sleep 10;done
         ports:
         - containerPort: 4000
         env:
@@ -44,13 +49,9 @@ spec:
         - "/bin/sh"
         args: 
         - "-c"
-        - "mkdir"
-        - "-p"
-        - "/var/www/dist/extensions/vtr/"
+        - "mkdir -p /var/www/dist/extensions/vtr/"
         - "&&"
-        - "cp"
-        - "-R"
-        - "/tmp/* /var/www/dist/extensions/vtr/"
+        - "cp -R /tmp/* /var/www/dist/extensions/vtr/"
         volumeMounts:
         - mountPath: /var/www/dist/extensions
           name: extensions
@@ -60,22 +61,31 @@ spec:
         - "/bin/sh"
         args: 
         - "-c"
-        - "mkdir"
-        - "-p"
-        - "/var/www/dist/extensions/rcord/"
+        - "mkdir -p /var/www/dist/extensions/rcord/"
         - "&&"
-        - "cp"
-        - "-R"
-        - "/tmp/* /var/www/dist/extensions/rcord/"
+        - "cp -R /tmp/* /var/www/dist/extensions/rcord/"
         volumeMounts:
         - mountPath: /var/www/dist/extensions
           name: extensions
-  volumes:
-  - name: style
-    hostPath:
-      path: /opt/cord_profile/style.config.js
-  - name: app
-    hostPath:
-      path: /opt/cord_profile/app.config.js
-  - name: extensions
-    emptyDir: {}
+      volumes:
+      - name: style
+        hostPath:
+          path: /opt/cord_profile/style.config.js
+      - name: app
+        hostPath:
+          path: /opt/cord_profile/app.config.js
+      - name: extensions
+        emptyDir: {}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  xos-gui
+spec:
+  selector:
+    app:  xos-gui
+  type:  NodePort
+  ports:
+  - name:  xos-gui
+    port:  4000
+    targetPort:  4000
