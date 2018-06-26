@@ -1,23 +1,19 @@
 ---
-app: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name:  xos-tosca
-  labels:
-    name:  xos-tosca
 spec:
-  # strategy:
-  #   rollingUpdate:
-  #     maxSurge: 1
-  #     maxUnavailable: 1
-  #   type: RollingUpdate
+  selector:
+    matchLabels:
+      app: xos-tosca
   template:
     metadata:
       labels:
-        name:  xos-tosca
+        app:  xos-tosca
     spec:
       containers:
-      - image:  xosproject/xos-tosca
+      - image:  xosproject/xos-tosca:master
         name:  xos-tosca
         env:
         - name:  SERVICE_9102_NAME
@@ -26,7 +22,7 @@ spec:
         - containerPort:  9102
         volumeMounts:
         - mountPath: /usr/local/share/ca-certificates/local_certs.crt
-          name: chain-pem
+          name: local-certs
           readOnly: true
         - mountPath: /opt/xos-tosca/src/xos-tosca.config.yaml
           name: tosca
@@ -34,7 +30,7 @@ spec:
         - name: tosca
           hostPath:
             path: /opt/cord_profile/xos-tosca.config.yaml
-        - name: chain-pem
+        - name: local-certs
           hostPath:
             path: /opt/cord_profile/im_cert_chain.pem
 ---
