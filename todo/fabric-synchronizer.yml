@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  fabric-synchronizer
+spec:
+  selector:
+    matchLabels:
+      app: fabric-synchronizer
+  template:
+    metadata:
+      labels:
+        app:  fabric-synchronizer
+    spec:
+      containers:
+      - image:  xosproject/fabric-synchronizer:master
+        name:  fabric-synchronizer
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo hello; sleep 10;done"]
+        env:
+        - name:  SERVICE_NAME
+          value:  xos-fabric-synchronizer       
+        volumeMounts:
+        - mountPath: /opt/xos/xos_config.yaml
+          name: config
+          readOnly: true
+        - mountPath: /opt/cord_profile/node_key
+          name: node-key
+          readOnly: true
+        - mountPath: /opt/xos/services/fabric/credentials
+          name: credentials
+          readOnly: true
+        - mountPath: /usr/local/share/ca-certificates/local_certs.crt
+          name: local-certs
+          readOnly: true
+      volumes:
+      - name: config
+        hostPath:
+          path: /opt/cord_profile/xos_config_synchronizer.yaml
+      - name: node-key
+        hostPath:
+          path: /opt/cord_profile/node_key
+      - name: credentials
+        hostPath:
+          path: /opt/credentials
+      - name: local-certs
+        hostPath:
+          path: /opt/cord_profile/im_cert_chain.pem

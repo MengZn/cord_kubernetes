@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  rcord-synchronizer
+spec:
+  selector:
+    matchLabels:
+      app: rcord-synchronizer
+  template:
+    metadata:
+      labels:
+        app:  rcord-synchronizer
+    spec:
+      containers:
+      - image:  xosproject/rcord-synchronizer:master
+        name:  rcord-synchronizer
+        env:
+        - name:  SERVICE_NAME
+          value:  xos-rcord-synchronizer      
+        volumeMounts:
+        - mountPath: /opt/xos/xos_config.yaml
+          name: config
+          readOnly: true
+        - mountPath: /opt/cord_profile/node_key
+          name: node-key
+          readOnly: true
+        - mountPath: /opt/xos/services/rcord/credentials
+          name: credentials
+          readOnly: true
+        - mountPath: /usr/local/share/ca-certificates/local_certs.crt
+          name: local-certs
+          readOnly: true
+      volumes:
+      - name: config
+        hostPath:
+          path: /opt/cord_profile/xos_config_synchronizer.yaml
+      - name: node-key
+        hostPath:
+          path: /opt/cord_profile/node_key
+      - name: credentials
+        hostPath:
+          path: /opt/credentials
+      - name: local-certs
+        hostPath:
+          path: /opt/cord_profile/im_cert_chain.pem

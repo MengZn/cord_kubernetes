@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  vtn-synchronizer
+spec:
+  selector:
+    matchLabels:
+      app: vtn-synchronizer
+  template:
+    metadata:
+      labels:
+        app:  vtn-synchronizer
+    spec:
+      containers:
+      - image:  xosproject/vtn-synchronizer:master
+        name:  vtn-synchronizer
+        env:
+        - name:  SERVICE_NAME
+          value:  vtn-synchronizer
+        volumeMounts:
+        - mountPath: /opt/xos/xos_config.yaml
+          name: config
+          readOnly: true
+        - mountPath: /opt/cord_profile/node_key
+          name: node-key
+          readOnly: true
+        - mountPath: /opt/xos/services/vtn/credentials
+          name: credentials
+          readOnly: true
+        - mountPath: /usr/local/share/ca-certificates/local_certs.crt
+          name: local-certs
+          readOnly: true
+        - mountPath: /opt/xos/services/vtn/keys/vsg_rsa
+          name: vsg-rsa
+          readOnly: true
+      volumes:
+      - name: config
+        hostPath:
+          path: /opt/cord_profile/xos_config_synchronizer.yaml
+      - name: node-key
+        hostPath:
+          path: /opt/cord_profile/node_key
+      - name: credentials
+        hostPath:
+          path: /opt/credentials
+      - name: local-certs
+        hostPath:
+          path: /opt/cord_profile/im_cert_chain.pem
+      - name: vsg-rsa
+        hostPath:
+          path: /opt/cord_profile/key_import/vsg_rsa
+          
